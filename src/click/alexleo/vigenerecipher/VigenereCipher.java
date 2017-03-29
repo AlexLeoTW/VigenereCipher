@@ -97,7 +97,7 @@ public class VigenereCipher {
 			cipherPos = (int)input.charAt(i) - (int)'A';
 			passPos = (int)options.password.charAt( i%options.password.length() ) - (int)'0';
 			buffer[i] = (char) ( (cipherPos - passPos + 26) % 26 + (int)'A' ) ;
-			System.out.printf(" %c - %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
+//			System.out.printf(" %c - %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
 		}
 		
 		return new String(buffer);
