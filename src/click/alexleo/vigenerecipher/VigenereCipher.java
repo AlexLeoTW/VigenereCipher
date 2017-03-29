@@ -7,24 +7,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//import org.apache.commons.cli.Options;
-
 public class VigenereCipher {
 	
-	public static void main(String[] arg) {
-//		Options options = new Options();
+	public static void main(String[] args) {
 		
 		Menu menu = new Menu();
 		VigenereOptions options = null;
 		
-		options = menu.textMenu();
+		options = menu.textMenu(args);
 		
 		try {
 			process(options);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		// TODO inplement verbose option
 		System.out.println("Complete!");
 		if (options.direction == VigenereOptions.ENCRYPT) {
 			System.out.printf("checkout [%s] for encrypted file", options.cipherTextLocation);
@@ -35,7 +32,7 @@ public class VigenereCipher {
 		
 	}
 	
-	private static void process(VigenereOptions options) throws IOException {
+	public static void process(VigenereOptions options) throws IOException {
 		
 		VigenereCipher cipher =  new VigenereCipher();
 		Path plainText = Paths.get(options.plainTextLocation);
