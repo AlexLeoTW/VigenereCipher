@@ -21,14 +21,13 @@ public class VigenereCipher {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// TODO inplement verbose option
+
 		System.out.println("Complete!");
 		if (options.direction == VigenereOptions.ENCRYPT) {
 			System.out.printf("checkout [%s] for encrypted file", options.cipherTextLocation);
 		} else {
 			System.out.printf("checkout [%s] for decrypted file", options.plainTextLocation);
 		}
-		
 		
 	}
 	
@@ -39,6 +38,12 @@ public class VigenereCipher {
 		Path cipherText = Paths.get(options.cipherTextLocation);
 		BufferedReader in = null;
 		BufferedWriter out = null;
+		
+		if (options.help) {
+			(new Menu()).printCliHelp();
+			return;
+		}
+		
 		if (options.direction == VigenereOptions.ENCRYPT) {
 			// in = Files.newBufferedReader(plainText, StandardCharsets.UTF_8);
 			in = Files.newBufferedReader(plainText);
@@ -78,7 +83,10 @@ public class VigenereCipher {
 			plainPos = (int)input.charAt(i) - (int)'A';
 			passPos = (int)options.password.charAt( i%options.password.length() ) - (int)'0';
 			buffer[i] = (char) ( (plainPos + passPos) % 26 + (int)'A' ) ;
-//			System.out.printf(" %c + %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
+			
+			if (options.verbose) {
+				System.out.printf(" %c + %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
+			}
 		}
 		
 		return new String(buffer);
@@ -94,7 +102,10 @@ public class VigenereCipher {
 			cipherPos = (int)input.charAt(i) - (int)'A';
 			passPos = (int)options.password.charAt( i%options.password.length() ) - (int)'0';
 			buffer[i] = (char) ( (cipherPos - passPos + 26) % 26 + (int)'A' ) ;
-//			System.out.printf(" %c - %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
+			
+			if (options.verbose) {
+				System.out.printf(" %c - %c = %c \n", input.charAt(i), options.password.charAt( i%options.password.length() ), buffer[i]);
+			}
 		}
 		
 		return new String(buffer);

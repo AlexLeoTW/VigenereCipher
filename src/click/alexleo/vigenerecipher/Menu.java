@@ -5,8 +5,10 @@ import java.util.Scanner;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class Menu {
 	
@@ -14,21 +16,10 @@ public class Menu {
 	private String cipherTextLocation = VigenereOptions.DEFAULT_CIPHER_TEXT;
 	private String password = VigenereOptions.DEFAULT_PASSWORD;
 	private Scanner keyboard = new Scanner(System.in);
+	private Options cliOptions = null;
 	
 	// TODO: use Enum!!! 
-	private Options buildCliOptions() {
-		Options cliOptions = new Options();
-		
-		cliOptions.addOption("e", "encrypt", false, "encrypt a file (default)");
-		cliOptions.addOption("d", "decrypt", false, "decrypt a file");
-		cliOptions.addOption("f", "from", true, "sepcify location of input file");
-		cliOptions.addOption("t", "to", true, "sepcify location of output file");
-		cliOptions.addRequiredOption("p", "password", true, "password to be used");
-		cliOptions.addOption("v", "verbose", false, "show more message");
-		
-		return cliOptions;
-	}
-	
+	// interactive menu only
 	public VigenereOptions textMenu() {
 		
 		int userSelect = 0;
@@ -61,30 +52,98 @@ public class Menu {
 		
 	}
 	
+	// entry point with CLI options support
 	public VigenereOptions textMenu(String[] cliArgs) {
 		
-		Options cliOptions = buildCliOptions(); 
+		cliOptions = buildCliOptions(); 
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
+		VigenereOptions vigenereOptions;
 		
 		try {
 			cmd = parser.parse( cliOptions, cliArgs);
-		} catch (ParseException e) {
-			System.out.println("Oops! Looks like there are some issues with your command line options, "
-					+ "please check the help with -h or --help option, "
-					+ "or continue by using internative menu below");
-		}
-		
-		VigenereOptions vigenereOptions;
-		try {
 			vigenereOptions = new VigenereOptions(cmd);
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println("please check the help with -h or --help option, "
+					+ "or continue by using internative menu below");
+			return textMenu();
+		}
+		
+		if ( (cmd.hasOption("e") || cmd.hasOption("d")) && !(cmd.hasOption("p")) ) {
+			System.out.println("Missing required option: p");
+			System.out.println("please check the help with -h or --help option, "
+					+ "or continue by using internative menu below");
 			return textMenu();
 		}
 		
 		return vigenereOptions;
 	}
 	
+	private Options buildCliOptions() {
+		
+		Option encrypt = Option.builder("e")
+				.longOpt("encrypt")
+				.desc("encrypt a file")
+				.build();
+		
+		Option decrypt = Option.builder("d")
+				.longOpt("decrypt")
+				.desc("decrypt a file")
+				.build();
+		
+		Option from = Option.builder("f")
+				.longOpt("from")
+				.hasArg(true)
+				.numberOfArgs(1)
+				.desc("sepcify location of input file")
+				.build();
+		
+		Option to = Option.builder("t")
+				.longOpt("to")
+				.hasArg(true)
+				.numberOfArgs(1)
+				.desc("sepcify location of output file")
+				.build();
+		
+		Option password = Option.builder("p")
+				.longOpt("password")
+				.hasArg(true)
+				.numberOfArgs(1)
+				.desc("password to be used")
+				.build();
+		
+		Option verbose = Option.builder("v")
+				.longOpt("verbose")
+				.desc("show more message")
+				.build();
+		
+		Option help = Option.builder("h")
+				.longOpt("help")
+				.desc("print this message")
+				.build();
+		
+		OptionGroup operation = new OptionGroup();
+		operation.addOption(encrypt);
+		operation.addOption(decrypt);
+		operation.addOption(help);
+		operation.setRequired(true);
+		
+		Options cliOptions = new Options();
+		cliOptions.addOption(from);
+		cliOptions.addOption(to);
+		cliOptions.addOption(password);
+		cliOptions.addOption(verbose);
+		cliOptions.addOptionGroup(operation);
+		
+		return cliOptions;
+	}
+	
+	public void printCliHelp() {
+		// automatically generate the help statement
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp( "vegenere", buildCliOptions() );
+	}
 	
 	public void printMenu() {
 		

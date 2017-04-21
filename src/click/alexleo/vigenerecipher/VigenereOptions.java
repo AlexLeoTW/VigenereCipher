@@ -9,12 +9,14 @@ public class VigenereOptions {
 	public static final String DEFAULT_PASSWORD = "0000";
 	public static final boolean DECRYPT = true;
 	public static final boolean ENCRYPT = false;
+	public static final boolean HELP = false;
 	
 	public final String plainTextLocation;
 	public final String password;
 	public final String cipherTextLocation;
 	public final boolean direction;
 	public final boolean verbose;
+	public final boolean help;
 	
 	public VigenereOptions(String plainTextLocation, String password, String cipherTextLocation, boolean direction) {
 		super();
@@ -23,15 +25,17 @@ public class VigenereOptions {
 		this.cipherTextLocation = cipherTextLocation;
 		this.direction = direction;
 		this.verbose = false;
+		this.help = false;
 	}
 	
-	public VigenereOptions(String plainTextLocation, String password, String cipherTextLocation, boolean direction, boolean verbose) {
+	public VigenereOptions(String plainTextLocation, String password, String cipherTextLocation, boolean direction, boolean verbose, boolean help) {
 		super();
 		this.plainTextLocation = plainTextLocation;
 		this.password = password;
 		this.cipherTextLocation = cipherTextLocation;
 		this.direction = direction;
 		this.verbose = verbose;
+		this.help = help;
 	}
 	
 	public VigenereOptions(CommandLine cmd) throws Exception {
@@ -48,5 +52,6 @@ public class VigenereOptions {
 		
 		this.password = cmd.getOptionValue("p");
 		this.verbose = cmd.hasOption("v");
+		this.help = cmd.hasOption("h");
 	}
 }
